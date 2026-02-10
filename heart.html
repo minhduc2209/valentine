@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> <3 </title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at center, #2d0a1f 0%, #0a0a0a 100%);
+            font-family: 'Playfair Display', serif;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #heartCanvas {
+            position: absolute;
+            transition: all 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+            filter: drop-shadow(0 0 30px rgba(247, 96, 112, 0.6));
+        }
+
+        #heartCanvas.shrink {
+            transform: translate(-38%, -35%) scale(0.25);
+            filter: drop-shadow(0 0 20px rgba(247, 96, 112, 0.8));
+        }
+
+        #card {
+            position: absolute;
+            width: 480px;
+            min-height: 580px;
+            background: linear-gradient(145deg, #ffffff 0%, #fff8fa 100%);
+            border-radius: 25px;
+            box-shadow: 
+                0 30px 90px rgba(247, 96, 112, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 45px 40px;
+            opacity: 0;
+            transform: translateX(100px) scale(0.9);
+            transition: all 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(247, 96, 112, 0.1);
+        }
+
+        #card.show {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        #card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b9d, #ffa5c9, #ff6b9d, #ffa5c9);
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card-header h1 {
+            color: #d63864;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-family: 'Dancing Script', cursive;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(214, 56, 100, 0.2);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .card-header .subtitle {
+            color: #ff8fab;
+            font-size: 15px;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .divider {
+            width: 70px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff8fab, transparent);
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        #card .message {
+            color: #5a3a47;
+            font-size: 17px;
+            line-height: 1.8;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        #card .message .highlight {
+            color: #d63864;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        #card .love-quote {
+            color: #ff8fab;
+            font-size: 14px;
+            font-style: italic;
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 3px solid #ffc4d6;
+            background: rgba(255, 196, 214, 0.1);
+            border-radius: 0 10px 10px 0;
+        }
+
+        #card .signature {
+            color: #d63864;
+            font-size: 22px;
+            margin-top: 25px;
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+            width: 100%;
+            font-weight: 700;
+        }
+
+        .hearts-decoration {
+            position: absolute;
+            font-size: 24px;
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+
+        .hearts-decoration.top-left {
+            top: 20px;
+            left: 20px;
+        }
+
+        .hearts-decoration.top-right {
+            top: 20px;
+            right: 20px;
+        }
+
+        .hearts-decoration.bottom-left {
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .hearts-decoration.bottom-right {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+        }
+
+        #musicControl {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #d63864 100%);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            box-shadow: 
+                0 8px 25px rgba(247, 96, 112, 0.5),
+                inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #musicControl:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 
+                0 12px 35px rgba(247, 96, 112, 0.7),
+                inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #musicControl:active {
+            transform: scale(0.95);
+        }
+
+        #musicControl svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .music-waves {
+            position: fixed;
+            top: 35px;
+            right: 35px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #ff6b9d;
+            opacity: 0;
+            animation: musicWave 2s ease-out infinite;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .music-waves.playing {
+            opacity: 1;
+        }
+
+        @keyframes musicWave {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart-float {
+            position: absolute;
+            font-size: 25px;
+            animation: float 8s infinite ease-in-out;
+            opacity: 0;
+            filter: blur(0.5px);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-150px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkleAnim 2s ease-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes sparkleAnim {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            #heartCanvas.shrink {
+                transform: translate(-40%, -45%) scale(0.25);
+            }
+
+            #card {
+                width: 90%;
+                padding: 40px 30px;
+                min-height: auto;
+            }
+
+            .card-header h1 {
+                font-size: 36px;
+            }
+
+            #card .message {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="heartCanvas" width="500" height="380"></canvas>
+        
+        <div id="card">
+            <span class="hearts-decoration top-left">💕</span>
+            <span class="hearts-decoration top-right">💕</span>
+            <span class="hearts-decoration bottom-left">💝</span>
+            <span class="hearts-decoration bottom-right">💝</span>
+
+            <div class="card-header">
+                <h1>Valentine's Day</h1>
+                <div class="subtitle">~ Dành tặng người Anh yêu ~</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="message">
+                Em là <span class="highlight">ánh sáng</span> trong đời anh,<br>
+                Là <span class="highlight">niềm vui</span> mỗi sớm mai thức giấc.<br>
+                Nụ cười em là <span class="highlight">động lực</span> cho anh,<br>
+                Để vượt qua mọi <span class="highlight">khó khăn</span> trong cuộc sống.
+            </div>
+
+            <div class="love-quote">
+                "Tình yêu không phải là nhìn nhau,<br>
+                mà là cùng nhau nhìn về một hướng"
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="message">
+                Anh hứa sẽ luôn ở bên em,<br>
+                Trong mọi khoảnh khắc, vui hay buồn.<br>
+                <span class="highlight">Anh yêu em ❤️</span>
+            </div>
+
+            <div class="signature">
+                Mãi mãi bên em...
+            </div>
+        </div>
+
+        <div class="hearts-bg" id="heartsBg"></div>
+    </div>
+
+    <button id="musicControl" title="Bật/Tắt nhạc">
+        <svg id="iconPlay" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg id="iconPause" viewBox="0 0 24 24" style="display: none;">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+        </svg>
+    </button>
+    <div class="music-waves" id="musicWaves"></div>
+
+    <audio id="bgMusic" loop>
+        <source src="D:\Ngày Đầu Tiên - Đức Phúc [Lyrics Video]  Mưa. - (320 Kbps).mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const CANVAS_WIDTH = 500;
+        const CANVAS_HEIGHT = 380;
+        const CANVAS_CENTER_X = CANVAS_WIDTH / 2;
+        const CANVAS_CENTER_Y = CANVAS_HEIGHT / 2;
+        const IMAGE_ENLARGE = 11;
+        const HEART_COLOR = "#f76070";
+
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        const music = document.getElementById('bgMusic');
+        const musicControl = document.getElementById('musicControl');
+        const musicWaves = document.getElementById('musicWaves');
+        const iconPlay = document.getElementById('iconPlay');
+        const iconPause = document.getElementById('iconPause');
+        const card = document.getElementById('card');
+
+        let isPlaying = false;
+
+        // Music control
+        musicControl.addEventListener('click', () => {
+            if (isPlaying) {
+                music.pause();
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+                musicWaves.classList.remove('playing');
+            } else {
+                music.play();
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+                musicWaves.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Floating hearts background
+        function createFloatingHearts() {
+            const heartsBg = document.getElementById('heartsBg');
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-float';
+                heart.textContent = ['❤️', '💕', '💖', '💗', '💝'][Math.floor(Math.random() * 5)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 8 + 's';
+                heart.style.fontSize = (Math.random() * 15 + 20) + 'px';
+                heartsBg.appendChild(heart);
+            }
+        }
+
+        // Create sparkles
+        function createSparkles() {
+            for (let i = 0; i < 30; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(sparkle);
+            }
+        }
+
+        createFloatingHearts();
+        createSparkles();
+
+        function heartFunction(t, shrinkRatio = IMAGE_ENLARGE) {
+            let x = 16 * Math.pow(Math.sin(t), 3);
+            let y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+            x *= shrinkRatio;
+            y *= shrinkRatio;
+
+            x += CANVAS_CENTER_X;
+            y += CANVAS_CENTER_Y;
+
+            return [Math.floor(x), Math.floor(y)];
+        }
+
+        function scatterInside(x, y, beta = 0.15) {
+            const ratioX = -beta * Math.log(Math.random());
+            const ratioY = -beta * Math.log(Math.random());
+
+            const dx = ratioX * (x - CANVAS_CENTER_X);
+            const dy = ratioY * (y - CANVAS_CENTER_Y);
+
+            return [x - dx, y - dy];
+        }
+
+        function shrink(x, y, ratio) {
+            const force = -1 / Math.pow((Math.pow(x - CANVAS_CENTER_X, 2) + Math.pow(y - CANVAS_CENTER_Y, 2)), 0.6);
+            const dx = ratio * force * (x - CANVAS_CENTER_X);
+            const dy = ratio * force * (y - CANVAS_CENTER_Y);
+            return [x - dx, y - dy];
+        }
+
+        function curve(p) {
+            return 2 * (2 * Math.sin(4 * p)) / (2 * Math.PI);
+        }
+
+        class Heart {
+            constructor(generateFrame = 20) {
+                this._points = new Set();
+                this._edgeDiffusionPoints = new Set();
+                this._centerDiffusionPoints = new Set();
+                this.allPoints = {};
+                this.build(2000);
+                this.randomHalo = 1000;
+                this.generateFrame = generateFrame;
+
+                for (let frame = 0; frame < generateFrame; frame++) {
+                    this.calc(frame);
+                }
+            }
+
+            build(number) {
+                for (let i = 0; i < number; i++) {
+                    const t = Math.random() * 2 * Math.PI;
+                    const [x, y] = heartFunction(t);
+                    this._points.add(`${x},${y}`);
+                }
+
+                const pointsArray = Array.from(this._points).map(p => p.split(',').map(Number));
+                for (const [_x, _y] of pointsArray) {
+                    for (let i = 0; i < 3; i++) {
+                        const [x, y] = scatterInside(_x, _y, 0.05);
+                        this._edgeDiffusionPoints.add(`${x},${y}`);
+                    }
+                }
+
+                for (let i = 0; i < 4000; i++) {
+                    const randomPoint = pointsArray[Math.floor(Math.random() * pointsArray.length)];
+                    let [x, y] = scatterInside(randomPoint[0], randomPoint[1], 0.17);
+                    this._centerDiffusionPoints.add(`${x},${y}`);
+                }
+            }
+
+            static calcPosition(x, y, ratio) {
+                const force = 1 / Math.pow((Math.pow(x - CANVAS_CENTER_X, 2) + Math.pow(y - CANVAS_CENTER_Y, 2)), 0.520);
+                const dx = ratio * force * (x - CANVAS_CENTER_X) + Math.floor(Math.random() * 3) - 1;
+                const dy = ratio * force * (y - CANVAS_CENTER_Y) + Math.floor(Math.random() * 3) - 1;
+                return [x - dx, y - dy];
+            }
+
+            calc(generateFrame) {
+                const ratio = 10 * curve(generateFrame / 10 * Math.PI);
+                const haloRadius = Math.floor(4 + 6 * (1 + curve(generateFrame / 10 * Math.PI)));
+                const haloNumber = Math.floor(3000 + 4000 * Math.abs(Math.pow(curve(generateFrame / 10 * Math.PI), 2)));
+
+                const allPoints = [];
+
+                const heartHaloPoint = new Set();
+                for (let i = 0; i < haloNumber; i++) {
+                    const t = Math.random() * 2 * Math.PI;
+                    let [x, y] = heartFunction(t, 11.6);
+                    [x, y] = shrink(x, y, haloRadius);
+                    
+                    const key = `${x},${y}`;
+                    if (!heartHaloPoint.has(key)) {
+                        heartHaloPoint.add(key);
+                        x += Math.floor(Math.random() * 29) - 14;
+                        y += Math.floor(Math.random() * 29) - 14;
+                        const size = [1, 2, 2][Math.floor(Math.random() * 3)];
+                        allPoints.push([x, y, size]);
+                    }
+                }
+
+                const pointsArray = Array.from(this._points).map(p => p.split(',').map(Number));
+                for (let [x, y] of pointsArray) {
+                    [x, y] = Heart.calcPosition(x, y, ratio);
+                    const size = Math.floor(Math.random() * 3) + 1;
+                    allPoints.push([x, y, size]);
+                }
+
+                const edgeArray = Array.from(this._edgeDiffusionPoints).map(p => p.split(',').map(Number));
+                for (let [x, y] of edgeArray) {
+                    [x, y] = Heart.calcPosition(x, y, ratio);
+                    const size = Math.floor(Math.random() * 2) + 1;
+                    allPoints.push([x, y, size]);
+                }
+
+                const centerArray = Array.from(this._centerDiffusionPoints).map(p => p.split(',').map(Number));
+                for (let [x, y] of centerArray) {
+                    [x, y] = Heart.calcPosition(x, y, ratio);
+                    const size = Math.floor(Math.random() * 2) + 1;
+                    allPoints.push([x, y, size]);
+                }
+
+                this.allPoints[generateFrame] = allPoints;
+            }
+
+            render(renderFrame) {
+                // Don't fill with black - keep transparent background
+                ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                
+                ctx.fillStyle = HEART_COLOR;
+                const points = this.allPoints[renderFrame % this.generateFrame];
+                
+                for (const [x, y, size] of points) {
+                    ctx.fillRect(x, y, size, size);
+                }
+            }
+        }
+
+        const heart = new Heart();
+        let frame = 0;
+        let startTime = Date.now();
+
+        function draw() {
+            heart.render(frame);
+            frame++;
+            
+            const elapsed = Date.now() - startTime;
+            if (elapsed >= 3000 && !canvas.classList.contains('shrink')) {
+                canvas.classList.add('shrink');
+                setTimeout(() => {
+                    card.classList.add('show');
+                }, 800);
+            }
+            
+            setTimeout(draw, 160);
+        }
+
+        draw();
+
+        document.addEventListener('click', () => {
+            if (!isPlaying) {
+                music.play().then(() => {
+                    isPlaying = true;
+                    iconPlay.style.display = 'none';
+                    iconPause.style.display = 'block';
+                    musicWaves.classList.add('playing');
+                }).catch(() => {});
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
